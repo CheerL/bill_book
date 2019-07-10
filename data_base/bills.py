@@ -1,18 +1,23 @@
+from page.bills import BillAuth
+
 bills = {
     'item_title': 'bill',
+    'resource_methods': ['GET', 'POST'],
+    'item_methods': ['GET', 'PATCH', 'DELETE'],
+    'authentication': BillAuth,
     'schema': {
         'bill_book': {
             'type': 'objectid',
             'data_relation': {
                 'resource': 'bill_books',
-                'embeddable': True
+                'embeddable': False
             }
         },
         'time': {
             'type': 'datetime',
             'required': True
         },
-        'account': {
+        'amount': {
             'type': 'float',
             'required': True
         },
@@ -24,7 +29,7 @@ bills = {
             'required': True,
             'data_relation': {
                 'resource': 'accounts',
-                'embeddable': True
+                'embeddable': False
             }
         },
         'consumer': {
@@ -37,8 +42,8 @@ bills = {
             'type': 'objectid',
             'required': True,
             'data_relation': {
-                'resource': 'userinfos',
-                'embeddable': True
+                'resource': 'user_infos',
+                'embeddable': False
             }
         },
         'category': {

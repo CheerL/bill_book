@@ -1,10 +1,23 @@
+from page.accounts import AccountAuth
+
 accounts = {
     'item_title': 'account',
+    'resource_methods': ['GET', 'POST'],
+    'item_methods': ['GET', 'PATCH', 'DELETE'],
+    'authentication': AccountAuth,
     'schema': {
         'name': {
             'type': 'string',
             'required': True,
-            'default': '默认账户'
+            'default': 'default account'
+        },
+        'user': {
+            'type': 'objectid',
+            'required': True,
+            'data_relation': {
+                'resource': 'user_infos',
+                'embeddable': False
+            }
         },
         'description': {
             'type': 'string',
@@ -14,30 +27,14 @@ accounts = {
             'type': 'string',
             'default': 'icon'
         },
-        'balance': {
+        'amount': {
             'type': 'float',
             'required': True,
             'default': 0.0
         },
-        'transfer_records': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'transfer_records',
-                    'embeddable': True
-                }
-            }
-        },
-        'bills': {
-            'type': 'set',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'bills',
-                    'embeddable': True
-                }
-            }
+        'default': {
+            'type': 'boolean',
+            'default': False
         }
     }
 }

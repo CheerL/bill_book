@@ -1,13 +1,10 @@
 users = {
     'item_title': 'user',
-
-    # 'additional_lookup': {
-    #     'url': 'regex("[\w]+")',
-    #     'field': 'lastname'
-    # },
+    # 'resource_methods': ['GET'],
+    # 'item_methods': ['GET', 'PATCH'],
     'internal_resource': True,
     'schema': {
-        'account': {
+        'username' : {
             'type': 'string',
             'required': True,
             'unique': True,
@@ -19,6 +16,15 @@ users = {
             'minlength': 5,
             'maxlength': 200,
             'required': True,
-        }
+        },
+        'info': {
+            'type': 'objectid',
+            'required': True,
+            'unique': True,
+            'data_relation': {
+                'resource': 'user_infos',
+                'embeddable': False
+            }
+        },
     }
 }
