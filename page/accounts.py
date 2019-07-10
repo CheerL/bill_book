@@ -10,11 +10,17 @@ class AccountAuth(BaseAuth):
     def resource_auth(self, resource, user, method):
         return True
 
+
+def pre_insert_accounts(accounts):
+    for num, account in enumerate(accounts):
+        if account.get('default', False):
+            accounts[num]['default'] = False
+
 def pre_delete_accounts(account):
     if account['default']:
         abort(400)
 
-def pre_patch_accounts(payload, account):
+def pre_update_accounts(payload, account):
     if 'default' in payload:
         after = payload['default']
         before = account.get('default', False)

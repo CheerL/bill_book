@@ -102,7 +102,7 @@ def get(resource, lookup):
 def get_many(resource, lookup):
     lookup, _ = _trans_input(resource, lookup=lookup)
     result = app.data.driver.db[resource].find(lookup)
-    return [id2str(document) for document in result]
+    return result
 
 def delete(resource, lookup):
     lookup, _ = _trans_input(resource, lookup=lookup)

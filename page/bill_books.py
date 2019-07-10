@@ -29,3 +29,4 @@ def post_delete_bill_books(bill_book):
         operator.patch('user_infos', {'$pull': {'bill_books': bill_book['_id']}}, {'_id': owner})
 
     operator.delete_many('bills', {'bill_book': bill_book['_id']})
+    operator.delete_many('bill_categorys', {'bill_book': bill_book['_id']})

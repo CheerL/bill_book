@@ -23,6 +23,7 @@ bills = {
         },
         'remark': {
             'type': 'string',
+            'default': ''
         },
         'account': {
             'type': 'objectid',
@@ -46,20 +47,19 @@ bills = {
                 'embeddable': False
             }
         },
-        'category': {
-            'type': 'list',
-            'required': True,
-            'schema': {
-                'type': 'dict',
-                'schema': {
-                    'name': {
-                        'type': 'string',
-                    },
-                    'levle': {
-                        'type': 'integer'
-                    }
-                }
-            }
+        'cat_0': {
+            'type': 'string',
+            'required': True
+        },
+        'cat_1': {
+            'type': 'string',
+            # 'required': True,
+            'dependencies': 'cat_0'
+        },
+        'cat_2': {
+            'type': 'string',
+            'dependencies': ['cat_0', 'cat_1'],
+            # 'required': True
         }
     }
 }

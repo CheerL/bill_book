@@ -72,18 +72,7 @@ bill_books = {
         'cover': {
             'type': 'string',
             'default': 'cover'
-        },
-        'categorys': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'bill_categorys',
-                    'embeddable': True
-                },
-            },
-            'default': []
-        },
+        }
         # 'recent_bills': {
         #     'type': 'list',
         #     'schema': {
