@@ -1,11 +1,13 @@
 from app import app
 from page import api
+from settings import HOST, PORT
 
 import page.users
 import page.bill_books
 import page.accounts
 import page.bills
 import page.bill_categorys
+
 
 app.register_blueprint(api, url_prefix=app.api_prefix)
 
@@ -23,4 +25,5 @@ app.on_insert_bill_categorys += page.bill_categorys.pre_insert_bill_categorys
 app.on_update_bill_categorys += page.bill_categorys.pre_update_bill_categorys
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host=HOST, port=PORT)
+

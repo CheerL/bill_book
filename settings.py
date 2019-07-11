@@ -1,6 +1,11 @@
 import data_base
 
-MONGO_URI = 'mongodb://192.168.10.100:27017/bill_book'
+HOST = '0.0.0.0'
+PORT = 8099
+
+OPTIMIZE_PAGINATION_FOR_SPEED = True
+HATEOAS = False
+MONGO_URI = 'mongodb://localhost:27017/bill_book'
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
 # PUBLIC_METHODS = []
