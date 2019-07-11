@@ -5,11 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 autopep8 = "*"
+pylint = "*"
 
 [packages]
 eve = "*"
 pyjwt = "*"
 bcrypt = "*"
+gunicorn = "*"
+gevent = "*"
 
 [requires]
 python_version = "3.6"

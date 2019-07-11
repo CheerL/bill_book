@@ -5,7 +5,7 @@ PORT = 8099
 
 OPTIMIZE_PAGINATION_FOR_SPEED = True
 HATEOAS = False
-MONGO_URI = 'mongodb://localhost:27017/bill_book'
+MONGO_URI = 'mongodb://home.pi:27017/bill_book'
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
 # PUBLIC_METHODS = []
