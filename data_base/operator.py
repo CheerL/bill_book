@@ -138,6 +138,13 @@ def post_many(resource, payload):
         for id_ in result.inserted_ids
     ]
 
+def aggregate(resource, pipelines, lookup):
+    if not isinstance(pipelines, list):
+        pipelines = [pipelines]
+    pipelines.append({'$match': lookup})
+    result = app.data.driver.db[resource].aggregate(pipelines)
+    return result
+
 def web_post(resource, payload):
     response, _, _, code, _ = _web_post(resource, payl=payload)
     if code == 201:

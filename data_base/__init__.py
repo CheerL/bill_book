@@ -6,3 +6,4 @@ from data_base.messages import messages
 from data_base.transfer_records import transfer_records
 from data_base.user_infos import user_infos
 from data_base.users import users
+from data_base.bill_book_user_relation import bill_book_user_relation

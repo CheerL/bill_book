@@ -17,16 +17,16 @@ user_infos = {
             'type': 'string',
             'default': 'avatar'
         },
-        'bill_books': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'bill_books',
-                    'embeddable': False
-                }
-            }
-        },
+        # 'bill_books': {
+        #     'type': 'list',
+        #     'schema': {
+        #         'type': 'objectid',
+        #         'data_relation': {
+        #             'resource': 'bill_books',
+        #             'embeddable': False
+        #         }
+        #     }
+        # },
         # 'friends': {
         #     'type': 'list',
         #     'schema': {

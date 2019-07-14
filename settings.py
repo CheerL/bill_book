@@ -1,7 +1,7 @@
 import data_base
 
 HOST = '0.0.0.0'
-PORT = 8099
+PORT = 5000
 
 OPTIMIZE_PAGINATION_FOR_SPEED = True
 HATEOAS = False
@@ -22,6 +22,7 @@ PAGINATION_LIMIT = 50
 DOMAIN = {
     'accounts': data_base.accounts,
     'bill_books': data_base.bill_books,
+    'bill_book_user_relation': data_base.bill_book_user_relation,
     'bill_categorys': data_base.bill_categorys,
     'bills': data_base.bills,
     'messages': data_base.messages,

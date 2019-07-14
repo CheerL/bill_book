@@ -15,74 +15,17 @@ bill_books = {
             'default': ''
         },
         'status': {
-            'type': 'string',
-            'allowed': [
-                'free',
-                'public',
-                'private',
-                'close'
-            ],
-            'default': 'public'
-        },
-        'owners': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'user_infos',
-                    'embeddable': False
-                }
-            },
-            'required': True,
-            'default': []
-        },
-        'managers': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'user_infos',
-                    'embeddable': False
-                }
-            },
-            'default': []
-        },
-        'writers': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'user_infos',
-                    'embeddable': False
-                },
-            },
-            'default': []
-        },
-        'readers': {
-            'type': 'list',
-            'schema': {
-                'type': 'objectid',
-                'data_relation': {
-                    'resource': 'user_infos',
-                    'embeddable': False
-                },
-            },
-            'default': []
+            # 0: free
+            # 1: public
+            # 2: private
+            'type': 'integer',
+            'min': 0,
+            'max': 2,
+            'default': 1
         },
         'cover': {
             'type': 'string',
             'default': 'cover'
         }
-        # 'recent_bills': {
-        #     'type': 'list',
-        #     'schema': {
-        #         'type': 'objectid',
-        #         'data_relation': {
-        #             'resource': 'bills',
-        #             'embeddable': True
-        #         },
-        #     },
-        #     'default': []
-        # }
     }
 }

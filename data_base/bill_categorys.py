@@ -13,6 +13,8 @@ bill_categorys = {
         'level': {
             'type': 'integer',
             'required': True,
+            'min': 0,
+            'max': 2
         },
         'bill_book': {
             'required': True,

@@ -29,7 +29,7 @@ accounts = {
         },
         'amount': {
             'type': 'float',
-            'required': True,
+            'readonly': True,
             'default': 0.0
         },
         'default': {
