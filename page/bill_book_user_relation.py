@@ -30,11 +30,14 @@ def get_user_bill_book_relation(user):
         'bill_book_user_relation',
         {'user': user}
     )
-    relations = {
-        relation['bill_book']:relations['status']
-        for relation in relations
-    }
-    return relations
+    relation_dict = {}
+    for relation in relations:
+        relation_dict[str(relation['bill_book'])] = relation['status']
+    # relations = {
+    #     relation['bill_book']:relations['status']
+    #     for relation in relations
+    # }
+    return relation_dict
 
 def check_bill_book_readable(bill_book, user, relation=None):
     bill_book = operator.get('bill_books', {'_id': bill_book})
@@ -42,7 +45,7 @@ def check_bill_book_readable(bill_book, user, relation=None):
     if status <= 1:
         return True
     elif relation is not None:
-        return bill_book['_id'] in relation
+        return operator.id2str(bill_book['_id']) in relation
     else:
         relation = operator.get(
             'bill_book_user_relation',

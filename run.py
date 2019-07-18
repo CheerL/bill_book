@@ -13,6 +13,7 @@ import page.common
 
 app.register_blueprint(api, url_prefix=app.api_prefix)
 
+app.on_pre_GET += page.common.pre_get
 app.on_update += page.common.pre_update
 
 app.on_insert_accounts += page.accounts.pre_insert_accounts
@@ -21,6 +22,7 @@ app.on_update_accounts += page.accounts.pre_update_accounts
 app.on_delete_item_accounts += page.accounts.pre_delete_accounts
 app.on_deleted_item_accounts += page.accounts.post_delete_accounts
 
+app.on_insert_bills += page.bills.pre_insert_bills
 app.on_inserted_bills += page.bills.post_insert_bills
 app.on_pre_GET_bills += page.bills.pre_get_bills
 app.on_update_bills += page.bills.pre_update_bills

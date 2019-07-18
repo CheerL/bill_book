@@ -13,18 +13,19 @@ class BillBookAuth(BaseAuth):
             'bill_book_user_relation',
             {'user': user['_id'], 'bill_book': bill_book['_id']}
         )
-        if not relation:
-            return False
-        set_data('relation', relation)
+        if relation:
+            set_data('relation', relation)
+            relation_status = relation['status']
+        else:
+            relation_status = 4
 
-        relation_satus = relation['status']
         bill_book_status = bill_book['status']
         if method == 'DELETE':
-            return relation_satus <= 0
+            return relation_status <= 0
         elif method == 'PATCH':
-            return relation_satus <= 1
+            return relation_status <= 1
         elif method == 'GET':
-            return bill_book_status <= 1 or relation_satus <= 3
+            return bill_book_status <= 1 or relation_status <= 3
         return False
 
     def resource_auth(self, method):
@@ -60,15 +61,16 @@ def pre_get_bill_books(req, lookup):
            otherwise stop with error 409
         3. Given many bill book, check each and remove unaccessible ones.
     '''
-    print(lookup)
     user = get_data('user', 409)
     relation = get_user_bill_book_relation(user['_id'])
+    # print
     bill_book = lookup.get('_id', None) 
 
     if bill_book:
         lookup['_id'] = check_bill_book_lookup(bill_book, user['_id'], relation)
     else:
         lookup['_id'] = {'$in': list(relation.keys())}
+    # print(lookup)
 
 # U
 def pre_update_bill_books(updates, bill_book):

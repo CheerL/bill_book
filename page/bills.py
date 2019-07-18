@@ -58,7 +58,11 @@ def pre_insert_bills(bills):
             'user': user['_id'],
             'bill_book': bill['bill_book']
         })
-        if relation['status'] > 3:
+        if not relation:
+            bill_book = operator.get('bill_books', {'_id': bill['bill_book']})
+            if bill_book['status'] > 0:
+                abort(400)
+        elif relation['status'] > 2:
             abort(400)
 
         bills[num]['creater'] = user['_id']
@@ -70,7 +74,7 @@ def post_insert_bills(bills):
         1. Change the amont of the account of this bill
     '''
     for bill in bills:
-        change_account_amount(bill['amount'], bill['account'])
+        change_account_amount(bill['account'], bill['amount'])
 
 # R
 def pre_get_bills(req, lookup):
