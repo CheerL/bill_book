@@ -2,6 +2,7 @@ from auth import BaseAuth
 from data_base import operator
 from page.common import abort, get_data, set_data, del_immutable_field
 from page.bill_book_user_relation import get_user_bill_book_relation, check_bill_book_lookup
+from page.accounts import change_account_amount
 
 class BillBookAuth(BaseAuth):
     def instance_auth(self, bill_book, method):
@@ -61,16 +62,17 @@ def pre_get_bill_books(req, lookup):
            otherwise stop with error 409
         3. Given many bill book, check each and remove unaccessible ones.
     '''
-    user = get_data('user', 409)
-    relation = get_user_bill_book_relation(user['_id'])
-    # print
-    bill_book = lookup.get('_id', None) 
+    if lookup.get('_id', None) is None:
+        user = get_data('user', 409)
+        relation = get_user_bill_book_relation(user['_id'])
+        # print
+        bill_book = lookup.get('_id', None) 
 
-    if bill_book:
-        lookup['_id'] = check_bill_book_lookup(bill_book, user['_id'], relation)
-    else:
-        lookup['_id'] = {'$in': list(relation.keys())}
-    # print(lookup)
+        if bill_book:
+            lookup['_id'] = check_bill_book_lookup(bill_book, user['_id'], relation)
+        else:
+            lookup['_id'] = {'$in': list(relation.keys())}
+        # print(lookup)
 
 # U
 def pre_update_bill_books(updates, bill_book):
@@ -92,6 +94,13 @@ def post_delete_bill_books(bill_book):
         2. Delete all bills belonging to this book.
         3. Delete all bill categorys belonging to this book.
     '''
-    operator.delete_many('bill_book_user_relation', {'bill_books': bill_book['_id']})
+    deleted = operator.aggregate('bills',
+        {'$group': {'_id': '$account', 'amount': {'$sum': '$amount'}}},
+        {'bill_book': bill_book['_id']}
+    )
+    for each in deleted:
+        change_account_amount(each['_id'], -each['amount'])
+
+    operator.delete_many('bill_book_user_relation', {'bill_book': bill_book['_id']})
     operator.delete_many('bills', {'bill_book': bill_book['_id']})
     operator.delete_many('bill_categorys', {'bill_book': bill_book['_id']})

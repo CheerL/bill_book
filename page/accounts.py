@@ -40,8 +40,9 @@ def pre_get_accounts(req, lookup):
         1. Set the user as now user. Users can only
            view their own account.
     '''
-    user = get_data('user', 409)
-    lookup['user'] = user['_id']
+    if lookup.get('_id', None) is None:
+        user = get_data('user', 409)
+        lookup['user'] = user['_id']
 
 # U
 def pre_update_accounts(updates, account):
@@ -76,26 +77,15 @@ def pre_delete_accounts(account):
             (1) Set any other existing account or create
                 a new account as default account.
             (2) Delete original default account.
+        2. Transfer all the money in this account to default
+           account.
+        3. Change all bills belonging to this account to
+           default account.
+        4. #TODO Change all transfer record related to this
+           account to default account
     '''
     if account['default']:
         abort(400)
-
-def post_delete_accounts(account):
-    '''
-    After delete account:
-        1. Transfer all the money in this account to default
-           account.
-        2. Change all bills belonging to this account to
-           default account.
-        3. #TODO Change all transfer record related to this
-           account to default account 
-    '''
-    default_account = operator.get({'default': True, 'user': account['user']})
-    deleted_amount = operator.aggregate(
-        {'$group': {'_id': None, 'amount': {'$sum': '$amount'}}},
-        {'account': account['_id']}
-    )
-    deleted_amount = next(default_account)['amount']
-    print(deleted_amount, account['amount'])
+    default_account = operator.get('accounts', {'default': True, 'user': account['user']})
     change_account_amount(default_account['_id'], account['amount'])
     operator.patch_many('bills', {'$set': {'account': default_account['_id']}}, {'account': account['_id']})

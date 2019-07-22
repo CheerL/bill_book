@@ -20,13 +20,13 @@ app.on_insert_accounts += page.accounts.pre_insert_accounts
 app.on_pre_GET_accounts += page.accounts.pre_get_accounts
 app.on_update_accounts += page.accounts.pre_update_accounts
 app.on_delete_item_accounts += page.accounts.pre_delete_accounts
-app.on_deleted_item_accounts += page.accounts.post_delete_accounts
+# app.on_deleted_item_accounts += page.accounts.post_delete_accounts
 
 app.on_insert_bills += page.bills.pre_insert_bills
 app.on_inserted_bills += page.bills.post_insert_bills
 app.on_pre_GET_bills += page.bills.pre_get_bills
 app.on_update_bills += page.bills.pre_update_bills
-app.on_deleted_bills += page.bills.post_delete_bills
+app.on_deleted_item_bills += page.bills.post_delete_bills
 
 # app.on_insert_bill_books += page.bill_books.pre_insert_bill_books
 app.on_inserted_bill_books += page.bill_books.post_insert_bill_books

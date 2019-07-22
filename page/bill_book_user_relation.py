@@ -103,13 +103,14 @@ def pre_get_relation(req, lookup):
         3. # TODO If not now user and no bill book,
            only show that user public bill books.
     '''
-    user = get_data('user', 409)
+    if lookup.get('_id', None) is None:
+        user = get_data('user', 409)
 
-    bill_book = lookup.get('bill_book', None)
-    user_ = lookup.get('user', None)
-    if not bill_book and not user_:
-        lookup['user'] = user['_id']
-    elif bill_book and not user_:
-        lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'])
-    elif not bill_book and user_ and user_ != user['_id']:
-        pass
+        bill_book = lookup.get('bill_book', None)
+        user_ = lookup.get('user', None)
+        if not bill_book and not user_:
+            lookup['user'] = user['_id']
+        elif bill_book and not user_:
+            lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'])
+        elif not bill_book and user_ and user_ != user['_id']:
+            pass

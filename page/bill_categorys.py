@@ -88,15 +88,16 @@ def pre_get_cats(req, lookup):
            otherwise stop with error 409
         3. Given many bill book, check each and remove unaccessible ones.
     '''
-    user = get_data('user', 409)
-    bill_book = lookup.get('bill_book', None)
-    relation = get_user_bill_book_relation(user['_id'])
-    user_bill_books = list(relation.keys())
+    if lookup.get('_id', None) is None:
+        user = get_data('user', 409)
+        bill_book = lookup.get('bill_book', None)
+        relation = get_user_bill_book_relation(user['_id'])
+        user_bill_books = list(relation.keys())
 
-    if bill_book:
-        lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'], relation)
-    else:
-        lookup['bill_book'] = {'$in': user_bill_books}
+        if bill_book:
+            lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'], relation)
+        else:
+            lookup['bill_book'] = {'$in': user_bill_books}
 
 # U
 def pre_update_bill_categorys(payload, cat):

@@ -18,12 +18,11 @@ class BillAuth(BaseAuth):
         })
         bill_book = operator.get('bill_books', {'_id': bill['bill_book']})
 
-        relation_status = relation['status'] if relation else None
+        relation_status = relation['status'] if relation else 4
         bill_book_status = bill_book['status']
         # set_data('relation', relation)
-
         if method in ['PATCH', 'DELETE']:
-            return bill_book_status <= 0 or relation_status <=1 or (user['_id'] is creater and relation_status <= 2)
+            return bill_book_status == 0 or relation_status <=1 or (user['_id'] is creater and relation_status <= 2)
         elif method == 'GET':
             return bill_book_status <= 1 or relation_status is not None
         return False
@@ -78,14 +77,15 @@ def post_insert_bills(bills):
 
 # R
 def pre_get_bills(req, lookup):
-    user = get_data('user', 409)
-    relation = get_user_bill_book_relation(user['_id'])
-    bill_book = lookup.get('bill_book', None) 
+    if lookup.get('_id', None) is None:
+        user = get_data('user', 409)
+        relation = get_user_bill_book_relation(user['_id'])
+        bill_book = lookup.get('bill_book', None) 
 
-    if bill_book:
-        lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'], relation)
-    else:
-        lookup['bill_book'] = {'$in': list(relation.keys())}
+        if bill_book:
+            lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'], relation)
+        else:
+            lookup['bill_book'] = {'$in': list(relation.keys())}
 
 # U
 def pre_update_bills(updates, bill):
@@ -107,4 +107,4 @@ def post_update_bills(updates, bill):
 
 # D
 def post_delete_bills(bill):
-    change_account_amount(-bill['amount'], bill['account'])
+    change_account_amount(bill['account'], -bill['amount'])

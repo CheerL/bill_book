@@ -13,7 +13,6 @@ accounts = {
         },
         'user': {
             'type': 'objectid',
-            'required': True,
             'data_relation': {
                 'resource': 'user_infos',
                 'embeddable': False

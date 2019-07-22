@@ -141,7 +141,7 @@ def post_many(resource, payload):
 def aggregate(resource, pipelines, lookup):
     if not isinstance(pipelines, list):
         pipelines = [pipelines]
-    pipelines.append({'$match': lookup})
+    pipelines = [{'$match': lookup}] + pipelines
     result = app.data.driver.db[resource].aggregate(pipelines)
     return result
 

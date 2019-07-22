@@ -8,6 +8,7 @@ bills = {
     'schema': {
         'bill_book': {
             'type': 'objectid',
+            'required': True,
             'data_relation': {
                 'resource': 'bill_books',
                 'embeddable': False
@@ -41,7 +42,6 @@ bills = {
         },
         'creater': {
             'type': 'objectid',
-            'required': True,
             'data_relation': {
                 'resource': 'user_infos',
                 'embeddable': False
