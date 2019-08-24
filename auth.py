@@ -15,7 +15,7 @@ class BaseAuth(TokenAuth):
         raise NotImplementedError
 
     def check_auth(self, token, allowed_roles, resource, method):
-        status, msg, jwt, payload = jwt_run(jwt=token)
+        status, new, msg, jwt, payload = jwt_run(jwt=token)
         if not status:
             return False
 

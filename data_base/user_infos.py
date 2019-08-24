@@ -15,27 +15,7 @@ user_infos = {
         },
         'avatar': {
             'type': 'string',
-            'default': 'avatar'
-        },
-        # 'bill_books': {
-        #     'type': 'list',
-        #     'schema': {
-        #         'type': 'objectid',
-        #         'data_relation': {
-        #             'resource': 'bill_books',
-        #             'embeddable': False
-        #         }
-        #     }
-        # },
-        # 'friends': {
-        #     'type': 'list',
-        #     'schema': {
-        #         'type': 'objectid',
-        #         'data_relation': {
-        #             'resource': 'user_infos',
-        #             'embeddable': True
-        #         }
-        #     }
-        # }
+            'default': 'default'
+        }
     }
 }

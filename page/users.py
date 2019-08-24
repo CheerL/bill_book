@@ -1,5 +1,4 @@
 from page import api
-import json
 from flask import request, jsonify
 from flask_cors import cross_origin
 from page.encrypt import jwt_run, bcrypt_generator, bcrypt_checker
@@ -9,7 +8,7 @@ from data_base import operator
 @api.route('/users/register', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def register():
-    data = json.loads(request.get_data())
+    data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     remember = data.get('remember', False)
@@ -19,16 +18,14 @@ def register():
     user = operator.get('users', {'username': username})
     if user:
         return jsonify({
-            'status': False,
-            'msg': 'User already exists'
+            'message': 'User already exists'
         }), 409
 
     # create user_info
     user_info = operator.post('user_infos', {'nickname': nickname})
     if not user_info:
         return jsonify({
-            'status': False,
-            'msg': 'Failed to create user info'
+            'message': 'Failed to create user info'
         }), 407
 
     # create user with hashed password
@@ -41,8 +38,7 @@ def register():
     if not user:
         operator.delete('user_infos', {'_id': user_info['_id']})
         return jsonify({
-            'status': False,
-            'msg': 'Failed to create user' 
+            'message': 'Failed to create user' 
         }), 407
 
     # create default account
@@ -56,32 +52,39 @@ def register():
         operator.delete('user_infos', {'_id': user_info['_id']})
         operator.delete('users', {'_id': user['_id']})
         return jsonify({
-            'status': False,
-            'msg': 'Failed to create account' 
+            'message': 'Failed to create account' 
         }), 407
 
     # generate jwt
-    status, msg, jwt, payload = jwt_run(payload={
-        'user': user_info['id'],
-        'remember': remember
-    })
-    if not status:
-        return jsonify({
-            'status': False,
-            'msg': msg
-        }), 400
-
     return jsonify({
-        'status': True,
-        'user': user_info['id'],
-        'jwt': jwt,
-        'msg': msg
+        'message': 'Success to register'
     }), 200
 
 @api.route('/users/login', methods=['POST', 'OPTIONS'])
 @cross_origin(supports_credentials=True)
 def login():
-    data = json.loads(request.get_data())
+    auth = request.headers.get("Authorization")
+    if auth:
+        status, new, message, jwt, payload = jwt_run(jwt=auth)
+        if status:
+            username = payload.get('username')
+            user_id = payload.get('user')
+            user_info = operator.get('user_infos', {'_id': user_id})
+            if not user_info:
+                return jsonify({
+                    'message': 'Invaild JWT, need to login'
+                }), 401
+
+            return jsonify({
+                'jwt': jwt if new else '',
+                'message': message,
+                'id': user_info['id'],
+                'username': username,
+                'nickname': user_info['nickname'],
+                'avatar': user_info['avatar']
+            }), 200
+
+    data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     remember = data.get('remember', False)
@@ -89,47 +92,46 @@ def login():
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
-            'status': False,
-            'msg': 'User does not exist'
+            'message': 'User does not exist'
         }), 401
 
     # check password
     if not bcrypt_checker(password, user['password']):
         return jsonify({
-            'status': False,
-            'msg': 'Password is wrong'
+            'message': 'Password is wrong'
         }), 401
 
     # get user info
     user_info = operator.get('user_infos', {'_id': user['info']})
     if not user_info:
         return jsonify({
-            'status': False,
-            'msg': 'Failed to get user information'
+            'message': 'Failed to get user information'
         }), 404
 
     # generate jwt
-    status, msg, jwt, payload = jwt_run(payload={
+    status, new, message, jwt, payload = jwt_run(payload={
         'user': user_info['id'],
+        'username': username,
         'remember': remember
     })
     if not status:
         return jsonify({
-            'status': False,
-            'msg': msg
+            'message': message
         }), 400
 
     return jsonify({
-        'status': True,
-        'jwt': jwt,
-        'msg': msg,
-        'user': user_info['id']
+        'jwt': jwt if new else '',
+        'message': message,
+        'id': user_info['id'],
+        'username': username,
+        'nickname': user_info['nickname'],
+        'avatar': user_info['avatar']
     }), 200
 
 @api.route('/users/remove', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def remove():
-    data = json.loads(request.get_data())
+    data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     remember = data.get('remember', False)
@@ -138,15 +140,13 @@ def remove():
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
-            'status': False,
-            'msg': 'User does not exist'
+            'message': 'User does not exist'
         }), 401
 
     # check password
     if not bcrypt_checker(password, user['password']):
         return jsonify({
-            'status': False,
-            'msg': 'Password is wrong'
+            'message': 'Password is wrong'
         }), 401
 
     # get user info
@@ -175,14 +175,13 @@ def remove():
     operator.delete('users', {'_id': user['_id']})
 
     return jsonify({
-        'status': True,
-        'msg': 'remove user'
+        'message': 'remove user'
     }), 200
 
 @api.route('/users/reset_password', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def reset_password():
-    data = json.loads(request.get_data())
+    data = request.get_json()
     username = data.get('username')
     new_password = data.get('new_password')
 
@@ -190,8 +189,7 @@ def reset_password():
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
-            'status': False,
-            'msg': 'User does not exist'
+            'message': 'User does not exist'
         }), 401
 
     # save new password
@@ -199,7 +197,6 @@ def reset_password():
     operator.patch('users', {'$set': {'password': hashed}}, {'_id': user['_id']})
 
     return jsonify({
-        'status': True,
-        'msg': 'OK'
+        'message': 'OK'
     }), 200
 

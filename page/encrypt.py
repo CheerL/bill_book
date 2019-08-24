@@ -32,8 +32,11 @@ def jwt_refresher(payload: dict, exp=JWT_EXP_LENGTH, secret=JWT_SECRET, algorith
     return jwt, payload
 
 def jwt_run(payload=None, jwt=None, exp=JWT_EXP_LENGTH, secret=JWT_SECRET, algorithm=JWT_ALGORITHM):
+    status = False
+    new = False
     if payload and jwt is None:
         status = True
+        new = True
         msg = 'Generate new JWT'
         jwt, payload = jwt_generator(payload, exp, secret, algorithm)
 
@@ -50,17 +53,16 @@ def jwt_run(payload=None, jwt=None, exp=JWT_EXP_LENGTH, secret=JWT_SECRET, algor
                 msg = 'OK'
             elif remember and gen_time + JWT_REMEMBER_LENGTH >= now:
                 status = True
+                new = True
                 msg = 'Refresh JWT'
                 jwt, payload = jwt_refresher(payload, exp, secret, algorithm)
             else:
-                status = False
                 msg = 'JWT overtime, need relogin'
 
         except (InvalidSignatureError, DecodeError):
-            status = False
             msg = 'Invalid JWT'
 
-    return status, msg, jwt, payload
+    return status, new, msg, jwt, payload
 
 def bcrypt_generator(password, salt_length=BCRYPT_SALT_LENGTH):
     return hashpw(password.encode(), gensalt(salt_length)).decode()
