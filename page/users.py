@@ -4,6 +4,20 @@ from flask_cors import cross_origin
 from page.encrypt import jwt_run, bcrypt_generator, bcrypt_checker
 from data_base import operator
 
+def check_jwt(request):
+    jwt = request.headers.get("Authorization")
+    if not jwt:
+        return False, (jsonify({
+            'message': 'No JWT'
+        }), 401)
+
+    status, new, message, jwt, payload = jwt_run(jwt=jwt)
+    if not status:
+        return False, (jsonify({
+            'message': 'Invaild JWT, need to login'
+        }), 401)
+
+    return True, (new, message, jwt, payload)
 
 @api.route('/users/register', methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -60,30 +74,34 @@ def register():
         'message': 'Success to register'
     }), 200
 
-@api.route('/users/login', methods=['POST', 'OPTIONS'])
+@api.route('/users/jwt', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def login_jwt():
+    jwt_status, jwt_result = check_jwt(request)
+    if not jwt_status:
+        return jwt_result
+
+    new, message, jwt, payload = jwt_result
+    user_id = payload.get('user')
+    username = payload.get('username')
+    user_info = operator.get('user_infos', {'_id': user_id})
+    if not user_info:
+        return jsonify({
+            'message': 'Invaild JWT, need to login'
+        }), 401
+
+    return jsonify({
+        'jwt': jwt if new else '',
+        'message': message,
+        'id': user_info['id'],
+        'username': username,
+        'nickname': user_info['nickname'],
+        'avatar': user_info['avatar']
+    }), 200
+
+@api.route('/users/login', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def login():
-    auth = request.headers.get("Authorization")
-    if auth:
-        status, new, message, jwt, payload = jwt_run(jwt=auth)
-        if status:
-            username = payload.get('username')
-            user_id = payload.get('user')
-            user_info = operator.get('user_infos', {'_id': user_id})
-            if not user_info:
-                return jsonify({
-                    'message': 'Invaild JWT, need to login'
-                }), 401
-
-            return jsonify({
-                'jwt': jwt if new else '',
-                'message': message,
-                'id': user_info['id'],
-                'username': username,
-                'nickname': user_info['nickname'],
-                'avatar': user_info['avatar']
-            }), 200
-
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -131,27 +149,22 @@ def login():
 @api.route('/users/remove', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def remove():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    remember = data.get('remember', False)
+    jwt_status, jwt_result = check_jwt(request)
+    if not jwt_status:
+        return jwt_result
+
+    _, _, _, payload = jwt_result
 
     # get user
+    username = payload.get('username')
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
             'message': 'User does not exist'
         }), 401
 
-    # check password
-    if not bcrypt_checker(password, user['password']):
-        return jsonify({
-            'message': 'Password is wrong'
-        }), 401
-
     # get user info
     user_info = operator.get('user_infos', {'_id': user['info']})
-
     if user_info:
         # remove bill books
         # TODO
@@ -175,15 +188,15 @@ def remove():
     operator.delete('users', {'_id': user['_id']})
 
     return jsonify({
-        'message': 'remove user'
+        'message': 'Success to remove user'
     }), 200
 
-@api.route('/users/reset_password', methods=['POST'])
+@api.route('/users/forget', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def reset_password():
+def forget():
     data = request.get_json()
     username = data.get('username')
-    new_password = data.get('new_password')
+    password = data.get('password')
 
     # get user
     user = operator.get('users', {'username': username})
@@ -193,10 +206,10 @@ def reset_password():
         }), 401
 
     # save new password
-    hashed = bcrypt_generator(new_password)
+    hashed = bcrypt_generator(password)
     operator.patch('users', {'$set': {'password': hashed}}, {'_id': user['_id']})
 
     return jsonify({
-        'message': 'OK'
+        'message': 'Success to reset password'
     }), 200
 
