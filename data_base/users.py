@@ -1,8 +1,8 @@
 users = {
     'item_title': 'user',
-    # 'resource_methods': ['GET'],
+    'resource_methods': ['GET'],
     # 'item_methods': ['GET', 'PATCH'],
-    'internal_resource': True,
+    # 'internal_resource': True,
     'schema': {
         'username' : {
             'type': 'string',

@@ -1,10 +1,13 @@
 from page import api
+import json
 from flask import request, jsonify
+from flask_cors import cross_origin
 from page.encrypt import jwt_run, bcrypt_generator, bcrypt_checker
 from data_base import operator
 
 
 @api.route('/users/register', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def register():
     username = request.form.get('username')
     password = request.form.get('password')
@@ -74,12 +77,14 @@ def register():
         'msg': msg
     }), 200
 
-@api.route('/users/login', methods=['POST'])
+@api.route('/users/login', methods=['POST', 'OPTIONS'])
+@cross_origin(supports_credentials=True)
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    remember = request.form.get('remember', False)
-
+    data = json.loads(request.get_data())
+    # data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    remember = data.get('remember', False)
     # get user
     user = operator.get('users', {'username': username})
     if not user:
@@ -122,6 +127,7 @@ def login():
     }), 200
 
 @api.route('/users/remove', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def remove():
     username = request.form.get('username')
     password = request.form.get('password')
@@ -173,6 +179,7 @@ def remove():
     }), 200
 
 @api.route('/users/reset_password', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def reset_password():
     username = request.form.get('username')
     new_password = request.form.get('new_password')
@@ -193,3 +200,4 @@ def reset_password():
         'status': True,
         'msg': 'OK'
     }), 200
+

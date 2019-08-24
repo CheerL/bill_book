@@ -4,7 +4,7 @@ HOST = '0.0.0.0'
 PORT = 5000
 
 OPTIMIZE_PAGINATION_FOR_SPEED = True
-HATEOAS = False
+# HATEOAS = False
 MONGO_URI = 'mongodb://home.pi:27017/bill_book'
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
@@ -18,6 +18,8 @@ API_VERSION = 'v1'
 # ALLOWED_FILTERS = [*]
 PAGINATION_LIMIT = 50
 # DEBUG = True
+X_DOMAINS = ['http://localhost', 'http://localhost:3000']
+X_HEADERS = ['Authorization','Content-type','If-Match','Access-Control-Allow-Origin']
 
 DOMAIN = {
     'accounts': data_base.accounts,
