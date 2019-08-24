@@ -9,10 +9,11 @@ from data_base import operator
 @api.route('/users/register', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def register():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    remember = request.form.get('remember', False)
-    nickname = request.form.get('nickname')
+    data = json.loads(request.get_data())
+    username = data.get('username')
+    password = data.get('password')
+    remember = data.get('remember', False)
+    nickname = data.get('nickname')
 
     # check user
     user = operator.get('users', {'username': username})
@@ -81,7 +82,6 @@ def register():
 @cross_origin(supports_credentials=True)
 def login():
     data = json.loads(request.get_data())
-    # data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     remember = data.get('remember', False)
@@ -129,9 +129,10 @@ def login():
 @api.route('/users/remove', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def remove():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    remember = request.form.get('remember', False)
+    data = json.loads(request.get_data())
+    username = data.get('username')
+    password = data.get('password')
+    remember = data.get('remember', False)
 
     # get user
     user = operator.get('users', {'username': username})
@@ -181,8 +182,9 @@ def remove():
 @api.route('/users/reset_password', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def reset_password():
-    username = request.form.get('username')
-    new_password = request.form.get('new_password')
+    data = json.loads(request.get_data())
+    username = data.get('username')
+    new_password = data.get('new_password')
 
     # get user
     user = operator.get('users', {'username': username})
