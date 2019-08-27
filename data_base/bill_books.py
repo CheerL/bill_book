@@ -10,7 +10,7 @@ bill_books = {
             'type': 'string',
             'required': True
         },
-        'description': {
+        'remark': {
             'type': 'string',
             'default': ''
         },
@@ -23,9 +23,13 @@ bill_books = {
             'max': 2,
             'default': 1
         },
+        'default': {
+            'type': 'boolean',
+            'default': False
+        },
         'cover': {
             'type': 'string',
-            'default': 'cover'
+            'default': 'default'
         }
     }
 }

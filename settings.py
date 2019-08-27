@@ -18,8 +18,9 @@ API_VERSION = 'v1'
 # ALLOWED_FILTERS = [*]
 PAGINATION_LIMIT = 50
 # DEBUG = True
-X_DOMAINS = ['http://localhost', 'http://localhost:3000']
-X_HEADERS = ['Authorization','Content-type','If-Match','Access-Control-Allow-Origin']
+X_DOMAINS = '*'
+X_HEADERS = ['Authorization', 'Content-Type', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials', 'Access-Control-Allow-Methods']
+X_ALLOW_CREDENTIALS = True
 
 DOMAIN = {
     'accounts': data_base.accounts,
