@@ -18,7 +18,7 @@ accounts = {
                 'embeddable': False
             }
         },
-        'description': {
+        'remark': {
             'type': 'string',
             'default': ''
         },
@@ -28,7 +28,7 @@ accounts = {
         },
         'amount': {
             'type': 'float',
-            'readonly': True,
+            # 'readonly': True,
             'default': 0.0
         },
         'default': {

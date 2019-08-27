@@ -24,8 +24,8 @@ X_ALLOW_CREDENTIALS = True
 
 DOMAIN = {
     'accounts': data_base.accounts,
-    'bill_books': data_base.bill_books,
-    'bill_book_user_relation': data_base.bill_book_user_relation,
+    'billbooks': data_base.billbooks,
+    'billbook_user_relation': data_base.billbook_user_relation,
     'bill_categorys': data_base.bill_categorys,
     'bills': data_base.bills,
     'messages': data_base.messages,

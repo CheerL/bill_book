@@ -6,16 +6,16 @@ bills = {
     'item_methods': ['GET', 'PATCH', 'DELETE'],
     'authentication': BillAuth,
     'schema': {
-        'bill_book': {
+        'billbook': {
             'type': 'objectid',
             'required': True,
             'data_relation': {
-                'resource': 'bill_books',
+                'resource': 'billbooks',
                 'embeddable': False
             }
         },
         'time': {
-            'type': 'datetime',
+            'type': 'integer',
             'required': True
         },
         'amount': {
@@ -49,7 +49,7 @@ bills = {
         },
         'cat_0': {
             'type': 'string',
-            'required': True
+            # 'required': True
         },
         'cat_1': {
             'type': 'string',

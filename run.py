@@ -3,11 +3,11 @@ from page import api
 from settings import HOST, PORT
 
 import page.users
-import page.bill_books
+import page.billbooks
 import page.accounts
 import page.bills
 import page.bill_categorys
-import page.bill_book_user_relation
+import page.billbook_user_relation
 import page.common
 
 
@@ -28,14 +28,15 @@ app.on_pre_GET_bills += page.bills.pre_get_bills
 app.on_update_bills += page.bills.pre_update_bills
 app.on_deleted_item_bills += page.bills.post_delete_bills
 
-# app.on_insert_bill_books += page.bill_books.pre_insert_bill_books
-app.on_inserted_bill_books += page.bill_books.post_insert_bill_books
-app.on_pre_GET_bill_books += page.bill_books.pre_get_bill_books
-app.on_pre_update_bill_books += page.bill_books.pre_update_bill_books
-app.on_deleted_item_bill_books += page.bill_books.post_delete_bill_books
+app.on_insert_billbooks += page.billbooks.pre_insert_billbooks
+app.on_inserted_billbooks += page.billbooks.post_insert_billbooks
+app.on_pre_GET_billbooks += page.billbooks.pre_get_billbooks
+app.on_update_billbooks += page.billbooks.pre_update_billbooks
+app.on_delete_item_billbooks += page.billbooks.pre_delete_billbooks
+app.on_deleted_item_billbooks += page.billbooks.post_delete_billbooks
 
-app.on_insert_bill_book_user_relation += page.bill_book_user_relation.pre_insert_relation
-app.on_pre_GET_bill_book_user_relation += page.bill_book_user_relation.pre_insert_relation
+app.on_insert_billbook_user_relation += page.billbook_user_relation.pre_insert_relation
+app.on_pre_GET_billbook_user_relation += page.billbook_user_relation.pre_insert_relation
 
 app.on_insert_bill_categorys += page.bill_categorys.pre_insert_bill_categorys
 app.on_pre_GET_bill_categorys += page.bill_categorys.pre_get_cats

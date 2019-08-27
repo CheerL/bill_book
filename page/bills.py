@@ -1,6 +1,6 @@
 from auth import BaseAuth
 from data_base import operator
-from page.bill_book_user_relation import check_bill_book_lookup, get_user_bill_book_relation
+from page.billbook_user_relation import check_billbook_lookup, get_user_billbook_relation
 from page.bill_categorys import get_or_create_cat
 from page.accounts import change_account_amount
 from page.common import del_immutable_field, set_data, get_data, abort
@@ -12,26 +12,26 @@ class BillAuth(BaseAuth):
             return False
 
         creater = bill.get('creater')
-        relation = operator.get('bill_book_user_relation', {
+        relation = operator.get('billbook_user_relation', {
             'user': user['_id'],
-            'bill_book': bill['bill_book']
+            'billbook': bill['billbook']
         })
-        bill_book = operator.get('bill_books', {'_id': bill['bill_book']})
+        billbook = operator.get('billbooks', {'_id': bill['billbook']})
 
         relation_status = relation['status'] if relation else 4
-        bill_book_status = bill_book['status']
+        billbook_status = billbook['status']
         # set_data('relation', relation)
         if method in ['PATCH', 'DELETE']:
-            return bill_book_status == 0 or relation_status <=1 or (user['_id'] is creater and relation_status <= 2)
+            return billbook_status == 0 or relation_status <=1 or (user['_id'] is creater and relation_status <= 2)
         elif method == 'GET':
-            return bill_book_status <= 1 or relation_status is not None
+            return billbook_status <= 1 or relation_status is not None
         return False
 
     def resource_auth(self, method):
         return True
 
 def _check_bill_cats(bill):
-    bill_book = bill['bill_book']
+    billbook = bill['billbook']
 
     parent = None
     for level in range(3):
@@ -39,7 +39,7 @@ def _check_bill_cats(bill):
         if not cat_name:
             break
 
-        cat = get_or_create_cat(cat_name, level, bill_book, parent)
+        cat = get_or_create_cat(cat_name, level, billbook, parent)
         parent = cat['_id']
 
 # C
@@ -53,13 +53,14 @@ def pre_insert_bills(bills):
     user = get_data('user', 409)
 
     for num, bill in enumerate(bills):
-        relation = operator.get('bill_book_user_relation', {
+        print(bill)
+        relation = operator.get('billbook_user_relation', {
             'user': user['_id'],
-            'bill_book': bill['bill_book']
+            'billbook': bill['billbook']
         })
         if not relation:
-            bill_book = operator.get('bill_books', {'_id': bill['bill_book']})
-            if bill_book['status'] > 0:
+            billbook = operator.get('billbooks', {'_id': bill['billbook']})
+            if billbook['status'] > 0:
                 abort(400)
         elif relation['status'] > 2:
             abort(400)
@@ -79,17 +80,17 @@ def post_insert_bills(bills):
 def pre_get_bills(req, lookup):
     if lookup.get('_id', None) is None:
         user = get_data('user', 409)
-        relation = get_user_bill_book_relation(user['_id'])
-        bill_book = lookup.get('bill_book', None) 
+        relation = get_user_billbook_relation(user['_id'], True)
+        billbook = lookup.get('billbook', None) 
 
-        if bill_book:
-            lookup['bill_book'] = check_bill_book_lookup(bill_book, user['_id'], relation)
+        if billbook:
+            lookup['billbook'] = check_billbook_lookup(billbook, user['_id'], relation)
         else:
-            lookup['bill_book'] = {'$in': list(relation.keys())}
+            lookup['billbook'] = {'$in': list(relation.keys())}
 
 # U
 def pre_update_bills(updates, bill):
-    del_immutable_field(updates, ['creater', 'bill_book'])
+    del_immutable_field(updates, ['creater', 'billbook'])
 
 def post_update_bills(updates, bill):
     ori_amount = bill['amount']

@@ -1,7 +1,7 @@
-from page.bill_books import BillBookAuth
+from page.billbooks import BillBookAuth
 
-bill_books = {
-    'item_title': 'bill_book',
+billbooks = {
+    'item_title': 'billbook',
     'resource_methods': ['GET', 'POST'],
     'item_methods': ['GET', 'PATCH', 'DELETE'],
     'authentication': BillBookAuth,

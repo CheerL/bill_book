@@ -2,7 +2,9 @@ from page import api
 from flask import request, jsonify
 from flask_cors import cross_origin
 from page.encrypt import jwt_run, bcrypt_generator, bcrypt_checker
+from page.billbook_user_relation import get_user_billbook_relation
 from data_base import operator
+
 
 def check_jwt(request):
     jwt = request.headers.get("Authorization")
@@ -18,6 +20,7 @@ def check_jwt(request):
         }), 401)
 
     return True, (new, message, jwt, payload)
+
 
 @api.route('/users/register', methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -52,12 +55,12 @@ def register():
     if not user:
         operator.delete('user_infos', {'_id': user_info['_id']})
         return jsonify({
-            'message': 'Failed to create user' 
+            'message': 'Failed to create user'
         }), 407
 
     # create default account
     account = operator.post('accounts', {
-        'name': 'default account',
+        'name': '默认账户',
         'amount': 0.0,
         'default': True,
         'user': user_info['_id']
@@ -66,13 +69,25 @@ def register():
         operator.delete('user_infos', {'_id': user_info['_id']})
         operator.delete('users', {'_id': user['_id']})
         return jsonify({
-            'message': 'Failed to create account' 
+            'message': 'Failed to create account'
         }), 407
 
+    # creater transfer billbook
+    transfer_billbook = operator.post('billbooks', {
+        'name': '***transfer***',
+        'status': 2,
+        'default': False
+    })
+    operator.post('billbook_user_relation', {
+        'user': user_info['_id'],
+        'billbook': transfer_billbook['_id'],
+        'status': 0
+    })
     # generate jwt
     return jsonify({
         'message': 'Success to register'
     }), 200
+
 
 @api.route('/users/jwt', methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -98,6 +113,7 @@ def login_jwt():
         'nickname': user_info['nickname'],
         'avatar': user_info['avatar']
     }), 200
+
 
 @api.route('/users/login', methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -146,6 +162,7 @@ def login():
         'avatar': user_info['avatar']
     }), 200
 
+
 @api.route('/users/remove', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def remove():
@@ -170,11 +187,17 @@ def remove():
         # TODO
         # if there are other owners, remove user from owner list
         # if user not owners, remove user from corrensponding list
-        operator.delete_many('bill_books', {
-            '_id': {'$in': user_info.get('bill_books', [])},
-            'owners': [user_info['_id']]
+        relations = get_user_billbook_relation(
+            operator.id2str(user_info['_id']),
+            True
+        )
+        print(user['_id'], user['info'], relations, list(relations.keys()))
+        operator.delete_many('billbooks', {
+            '_id': {'$in': list(relations.keys())},
         })
-        
+        operator.delete_many('billbook_user_relation', {
+            'user': user_info['_id']
+        })
 
         # TODO
         # remove the avator if it was saved
@@ -190,6 +213,7 @@ def remove():
     return jsonify({
         'message': 'Success to remove user'
     }), 200
+
 
 @api.route('/users/forget', methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -207,9 +231,9 @@ def forget():
 
     # save new password
     hashed = bcrypt_generator(password)
-    operator.patch('users', {'$set': {'password': hashed}}, {'_id': user['_id']})
+    operator.patch('users', {'$set': {'password': hashed}}, {
+                   '_id': user['_id']})
 
     return jsonify({
         'message': 'Success to reset password'
     }), 200
-

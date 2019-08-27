@@ -16,11 +16,11 @@ bill_categorys = {
             'min': 0,
             'max': 2
         },
-        'bill_book': {
+        'billbook': {
             'required': True,
             'type': 'objectid',
             'data_relation': {
-                'resource': 'bill_books',
+                'resource': 'billbooks',
                 'embeddable': False
             }
         },
