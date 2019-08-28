@@ -1,6 +1,6 @@
 from auth import BaseAuth
 from data_base import operator
-from page.billbook_user_relation import check_billbook_lookup, get_user_billbook_relation
+from page.billbook_user_relation import check_billbook_lookup, get_user_billbook_relation, get_transfer_billbook
 from page.bill_categorys import get_or_create_cat
 from page.accounts import change_account_amount
 from page.common import del_immutable_field, set_data, get_data, abort
@@ -53,7 +53,6 @@ def pre_insert_bills(bills):
     user = get_data('user', 409)
 
     for num, bill in enumerate(bills):
-        print(bill)
         relation = operator.get('billbook_user_relation', {
             'user': user['_id'],
             'billbook': bill['billbook']
@@ -67,6 +66,7 @@ def pre_insert_bills(bills):
 
         bills[num]['creater'] = user['_id']
         _check_bill_cats(bill)
+        # change_account_amount(bill['account'], bill['amount'])
 
 def post_insert_bills(bills):
     '''
@@ -87,6 +87,19 @@ def pre_get_bills(req, lookup):
             lookup['billbook'] = check_billbook_lookup(billbook, user['_id'], relation)
         else:
             lookup['billbook'] = {'$in': list(relation.keys())}
+
+def post_get_bills(res):
+    user = get_data('user', 409)
+    if user:
+        transfer_billbook = get_transfer_billbook(user['_id'])
+        if '_items' in res:
+            for index, bill in enumerate(res['_items']):
+                if bill['billbook'] == transfer_billbook:
+                    res['_items'][index]['billbook'] = 'transfer'
+        else:
+            if res['billbook'] == transfer_billbook:
+                res['billbook'] = 'transfer'
+    return res
 
 # U
 def pre_update_bills(updates, bill):

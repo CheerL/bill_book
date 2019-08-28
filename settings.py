@@ -5,7 +5,7 @@ PORT = 5000
 
 OPTIMIZE_PAGINATION_FOR_SPEED = True
 # HATEOAS = False
-MONGO_URI = 'mongodb://home.pi:27017/bill_book'
+MONGO_URI = 'mongodb://vpn.cheerl.site:8042/bill_book'
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
 # PUBLIC_METHODS = []
@@ -19,7 +19,14 @@ API_VERSION = 'v1'
 PAGINATION_LIMIT = 50
 # DEBUG = True
 X_DOMAINS = '*'
-X_HEADERS = ['Authorization', 'Content-Type', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials', 'Access-Control-Allow-Methods']
+X_HEADERS = [
+    'Authorization',
+    'Content-Type',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Credentials',
+    'Access-Control-Allow-Methods',
+    'Cache-Control'
+    ]
 X_ALLOW_CREDENTIALS = True
 
 DOMAIN = {

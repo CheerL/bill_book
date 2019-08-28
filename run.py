@@ -25,6 +25,8 @@ app.on_delete_item_accounts += page.accounts.pre_delete_accounts
 app.on_insert_bills += page.bills.pre_insert_bills
 app.on_inserted_bills += page.bills.post_insert_bills
 app.on_pre_GET_bills += page.bills.pre_get_bills
+app.on_fetched_resource_bills += page.bills.post_get_bills
+app.on_fetched_item_bills += page.bills.post_get_bills
 app.on_update_bills += page.bills.pre_update_bills
 app.on_deleted_item_bills += page.bills.post_delete_bills
 
