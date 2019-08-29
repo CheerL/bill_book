@@ -54,12 +54,12 @@ bills = {
         'cat_1': {
             'type': 'string',
             # 'required': True,
-            'dependencies': 'cat_0'
+            # 'dependencies': 'cat_0'
         },
-        'cat_2': {
-            'type': 'string',
-            'dependencies': ['cat_0', 'cat_1'],
-            # 'required': True
-        }
+        # 'cat_2': {
+        #     'type': 'string',
+        #     'dependencies': ['cat_0', 'cat_1'],
+        #     # 'required': True
+        # }
     }
 }

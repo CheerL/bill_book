@@ -28,6 +28,7 @@ app.on_pre_GET_bills += page.bills.pre_get_bills
 app.on_fetched_resource_bills += page.bills.post_get_bills
 app.on_fetched_item_bills += page.bills.post_get_bills
 app.on_update_bills += page.bills.pre_update_bills
+app.on_updated_bills += page.bills.post_update_bills
 app.on_deleted_item_bills += page.bills.post_delete_bills
 
 app.on_insert_billbooks += page.billbooks.pre_insert_billbooks

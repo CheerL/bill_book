@@ -9,7 +9,7 @@ def del_immutable_field(updates, fields):
 def del_unchanged_field(updates, original):
     deleted_fields = []
     for field, value in updates.items():
-        if value == original[field]:
+        if field in original and value == original[field]:
             deleted_fields.append(field)
 
     for field in deleted_fields:

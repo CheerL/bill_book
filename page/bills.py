@@ -66,7 +66,6 @@ def pre_insert_bills(bills):
 
         bills[num]['creater'] = user['_id']
         _check_bill_cats(bill)
-        # change_account_amount(bill['account'], bill['amount'])
 
 def post_insert_bills(bills):
     '''
@@ -112,10 +111,10 @@ def post_update_bills(updates, bill):
     account = updates.get('account', None)
 
     if account:
-        change_account_amount(-ori_amount, ori_account)
-        change_account_amount(amount, account)
+        change_account_amount(ori_account, -ori_amount)
+        change_account_amount(account, amount)
     elif amount != ori_amount:
-        change_account_amount(amount - ori_amount, ori_account)
+        change_account_amount(ori_account, amount - ori_amount)
 
     _check_bill_cats(bill)
 
