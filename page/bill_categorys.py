@@ -72,7 +72,6 @@ def pre_update_bill_categorys(updates, cat):
         if operator.get('bill_categorys', {'name': name, 'billbook': billbook}):
             abort(400)
 
-        operator.patch_many('bills', {'$set': {'cat_0': name}}, {'billbook': billbook, 'cat_0': cat['name']})
 
 # D
 def post_delete_bill_categorys(cat):
@@ -80,4 +79,4 @@ def post_delete_bill_categorys(cat):
     After delete category:
         2. Delete all related bills.
     '''
-    operator.delete_many('bills', {'billbook': cat['billbook'], 'cat_0': cat['name']})
+    pass

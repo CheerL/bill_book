@@ -1,7 +1,6 @@
 from auth import BaseAuth
 from data_base import operator
 from page.billbook_user_relation import check_billbook_lookup, get_user_billbook_relation, get_transfer_billbook
-from page.bill_categorys import get_or_create_cat
 from page.accounts import change_account_amount
 from page.common import del_immutable_field, set_data, get_data, abort
 
