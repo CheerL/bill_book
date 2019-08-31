@@ -10,12 +10,6 @@ bill_categorys = {
             'type': 'string',
             'required': True
         },
-        'level': {
-            'type': 'integer',
-            'required': True,
-            'min': 0,
-            'max': 2
-        },
         'billbook': {
             'required': True,
             'type': 'objectid',
@@ -24,19 +18,16 @@ bill_categorys = {
                 'embeddable': False
             }
         },
-        'full_cat': {
-            'type': 'string'
-            # 'readonly': True
+        'icon': {
+            'type': 'string',
+            'required': True
         },
-        'parent': {
-            # 'required': True,
-            # 'readonly': True,
-            'dependencies': {'level': [1, 2]},
-            'type': 'objectid',
-            'data_relation': {
-                'resource': 'bill_categorys',
-                'embeddable': False
-            }
+        'labels': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            },
+            'default': []
         }
     }
 }

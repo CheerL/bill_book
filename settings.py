@@ -5,7 +5,7 @@ PORT = 5000
 
 OPTIMIZE_PAGINATION_FOR_SPEED = True
 # HATEOAS = False
-MONGO_URI = 'mongodb://vpn.cheerl.site:8042/bill_book'
+MONGO_URI = 'mongodb://localhost:27017/bill_book'
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
 # PUBLIC_METHODS = []

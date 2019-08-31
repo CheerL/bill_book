@@ -3,6 +3,7 @@ from page import api
 from settings import HOST, PORT
 
 import page.users
+import page.user_infos
 import page.billbooks
 import page.accounts
 import page.bills
@@ -15,6 +16,9 @@ app.register_blueprint(api, url_prefix=app.api_prefix)
 
 app.on_pre_GET += page.common.pre_get
 app.on_update += page.common.pre_update
+
+app.on_update_user_infos += page.user_infos.pre_update_user_infos
+app.on_updated_user_infos += page.user_infos.post_update_user_infos
 
 app.on_insert_accounts += page.accounts.pre_insert_accounts
 app.on_pre_GET_accounts += page.accounts.pre_get_accounts

@@ -38,7 +38,6 @@ class BillBookAuth(BaseAuth):
 
 def pre_insert_billbooks(billbooks):
     user = get_data('user', 409)
-    print(user['_id'])
     relation = get_user_billbook_relation(user['_id'])
 
     for num, billbook in enumerate(billbooks):
@@ -126,7 +125,6 @@ def post_delete_billbooks(billbook):
     After delete bill book:
         1. Clear all relation between this book and users.
         2. Delete all bills belonging to this book.
-        3. Delete all bill categorys belonging to this book.
     '''
     deleted = operator.aggregate('bills',
                                  {'$group': {'_id': '$account',
@@ -139,4 +137,3 @@ def post_delete_billbooks(billbook):
     operator.delete_many('billbook_user_relation', {
                          'billbook': billbook['_id']})
     operator.delete_many('bills', {'billbook': billbook['_id']})
-    operator.delete_many('bill_categorys', {'billbook': billbook['_id']})

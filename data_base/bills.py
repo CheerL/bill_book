@@ -47,6 +47,9 @@ bills = {
                 'embeddable': False
             }
         },
+        'creater_name': {
+            'type': 'string'
+        },
         'cat_0': {
             'type': 'string',
             # 'required': True

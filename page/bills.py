@@ -31,16 +31,16 @@ class BillAuth(BaseAuth):
         return True
 
 def _check_bill_cats(bill):
-    billbook = bill['billbook']
+    billbook = bill.get('billbook')
+    cat_name = bill.get('cat_0')
+    label = bill.get('cat_1', '')
 
-    parent = None
-    for level in range(3):
-        cat_name = bill.get('cat_%d' % level, '')
-        if not cat_name:
-            break
-
-        cat = get_or_create_cat(cat_name, level, billbook, parent)
-        parent = cat['_id']
+    cat = operator.get('bill_categorys', {'billbook': billbook, 'name': cat_name})
+    if cat and label:
+        if cat.get('labels', []):
+            operator.patch('bill_categorys', {'$push' : {'labels': label}}, {'_id': cat['_id']})
+        else:
+            operator.patch('bill_categorys', {'$set' : {'labels': [label]}}, {'_id': cat['_id']})
 
 # C
 def pre_insert_bills(bills):
@@ -65,7 +65,8 @@ def pre_insert_bills(bills):
             abort(400)
 
         bills[num]['creater'] = user['_id']
-        _check_bill_cats(bill)
+        bills[num]['creater_name'] = user['nickname']
+        _check_bill_cats(bill, user)
 
 def post_insert_bills(bills):
     '''
@@ -109,6 +110,7 @@ def post_update_bills(updates, bill):
     ori_account = bill['account']
     amount = updates.get('amount', ori_amount)
     account = updates.get('account', None)
+    user = get_data('user', 409)
 
     if account:
         change_account_amount(ori_account, -ori_amount)
@@ -116,7 +118,7 @@ def post_update_bills(updates, bill):
     elif amount != ori_amount:
         change_account_amount(ori_account, amount - ori_amount)
 
-    _check_bill_cats(bill)
+    _check_bill_cats(bill, user)
 
 # D
 def post_delete_bills(bill):
