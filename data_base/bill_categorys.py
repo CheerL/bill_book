@@ -6,7 +6,7 @@ bill_categorys = {
     'item_methods': ['GET', 'PATCH', 'DELETE'],
     'authentication': CategoryAuth,
     'schema': {
-        'name': {
+        'text': {
             'type': 'string',
             'required': True
         },

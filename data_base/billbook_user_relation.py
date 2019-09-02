@@ -1,17 +1,17 @@
-# from page.billbook_user_relation import BillBookUserRelationAuth
+from page.billbook_user_relation import BillBookUserRelationAuth
 
 billbook_user_relation = {
     'item_title': 'billbook_user_relation',
     'resource_methods': ['GET', 'POST'],
     'item_methods': ['GET', 'PATCH', 'DELETE'],
-    # 'authentication': BillBookUserRelationAuth,
+    'authentication': BillBookUserRelationAuth,
     'schema': {
         'user': {
             'type': 'objectid',
             'required': True,
             'data_relation': {
                 'resource': 'user_infos',
-                'embeddable': False
+                'embeddable': True
             }
         },
         'billbook': {

@@ -31,8 +31,8 @@ def pre_insert_bill_categorys(cats):
     '''
     for num, cat in enumerate(cats):
         billbook = cat.get('billbook')
-        name = cat.get('name')
-        if operator.get('bill_categorys', {'billbook': billbook, 'name': name}):
+        text = cat.get('text')
+        if operator.get('bill_categorys', {'billbook': billbook, 'text': text}):
             abort(400)
 
 # R
@@ -60,16 +60,16 @@ def pre_update_bill_categorys(updates, cat):
     '''
     Before update category:
         1. Remove immutable fields 'billbook'
-        2. If name is going to be change, check whether the same
+        2. If text is going to be change, check whether the same
            category exsits. If not, change the all related bills
            and categorys.
     '''
     del_immutable_field(updates, ['billbook'])
 
     billbook = cat.get('billbook')
-    name = updates.get('name', None)
-    if name:
-        if operator.get('bill_categorys', {'name': name, 'billbook': billbook}):
+    text = updates.get('text', None)
+    if text:
+        if operator.get('bill_categorys', {'text': text, 'billbook': billbook}):
             abort(400)
 
 

@@ -43,7 +43,7 @@ app.on_delete_item_billbooks += page.billbooks.pre_delete_billbooks
 app.on_deleted_item_billbooks += page.billbooks.post_delete_billbooks
 
 app.on_insert_billbook_user_relation += page.billbook_user_relation.pre_insert_relation
-app.on_pre_GET_billbook_user_relation += page.billbook_user_relation.pre_insert_relation
+app.on_pre_GET_billbook_user_relation += page.billbook_user_relation.pre_get_relation
 
 app.on_insert_bill_categorys += page.bill_categorys.pre_insert_bill_categorys
 app.on_pre_GET_bill_categorys += page.bill_categorys.pre_get_cats

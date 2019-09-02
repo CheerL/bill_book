@@ -4,6 +4,7 @@ from page.billbook_user_relation import check_billbook_lookup, get_user_billbook
 from page.accounts import change_account_amount
 from page.common import del_immutable_field, set_data, get_data, abort
 
+
 class BillAuth(BaseAuth):
     def instance_auth(self, bill, method):
         user = get_data('user')
@@ -21,7 +22,7 @@ class BillAuth(BaseAuth):
         billbook_status = billbook['status']
         # set_data('relation', relation)
         if method in ['PATCH', 'DELETE']:
-            return billbook_status == 0 or relation_status <=1 or (user['_id'] is creater and relation_status <= 2)
+            return billbook_status == 0 or relation_status <= 1 or (user['_id'] is creater and relation_status <= 2)
         elif method == 'GET':
             return billbook_status <= 1 or relation_status is not None
         return False
@@ -29,19 +30,24 @@ class BillAuth(BaseAuth):
     def resource_auth(self, method):
         return True
 
+
 def _check_bill_cats(bill):
     billbook = bill.get('billbook')
-    cat_name = bill.get('cat_0')
+    text = bill.get('cat_0')
     label = bill.get('cat_1', '')
 
-    cat = operator.get('bill_categorys', {'billbook': billbook, 'name': cat_name})
+    cat = operator.get('bill_categorys', {'billbook': billbook, 'text': text})
     if cat and label:
         if cat.get('labels', []):
-            operator.patch('bill_categorys', {'$push' : {'labels': label}}, {'_id': cat['_id']})
+            operator.patch('bill_categorys', {
+                           '$push': {'labels': label}}, {'_id': cat['_id']})
         else:
-            operator.patch('bill_categorys', {'$set' : {'labels': [label]}}, {'_id': cat['_id']})
+            operator.patch('bill_categorys', {
+                           '$set': {'labels': [label]}}, {'_id': cat['_id']})
 
 # C
+
+
 def pre_insert_bills(bills):
     '''
     Before insert bill:
@@ -65,7 +71,8 @@ def pre_insert_bills(bills):
 
         bills[num]['creater'] = user['_id']
         bills[num]['creater_name'] = user['nickname']
-        _check_bill_cats(bill, user)
+        _check_bill_cats(bill)
+
 
 def post_insert_bills(bills):
     '''
@@ -80,12 +87,14 @@ def pre_get_bills(req, lookup):
     if lookup.get('_id', None) is None:
         user = get_data('user', 409)
         relation = get_user_billbook_relation(user['_id'], True)
-        billbook = lookup.get('billbook', None) 
+        billbook = lookup.get('billbook', None)
 
         if billbook:
-            lookup['billbook'] = check_billbook_lookup(billbook, user['_id'], relation)
+            lookup['billbook'] = check_billbook_lookup(
+                billbook, user['_id'], relation)
         else:
             lookup['billbook'] = {'$in': list(relation.keys())}
+
 
 def post_get_bills(res):
     user = get_data('user', 409)
@@ -101,8 +110,11 @@ def post_get_bills(res):
     return res
 
 # U
+
+
 def pre_update_bills(updates, bill):
     del_immutable_field(updates, ['creater', 'billbook'])
+
 
 def post_update_bills(updates, bill):
     ori_amount = bill['amount']
@@ -117,8 +129,10 @@ def post_update_bills(updates, bill):
     elif amount != ori_amount:
         change_account_amount(ori_account, amount - ori_amount)
 
-    _check_bill_cats(bill, user)
+    _check_bill_cats(bill)
 
 # D
+
+
 def post_delete_bills(bill):
     change_account_amount(bill['account'], -bill['amount'])

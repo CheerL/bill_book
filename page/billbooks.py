@@ -34,8 +34,6 @@ class BillBookAuth(BaseAuth):
         return True
 
 # C
-
-
 def pre_insert_billbooks(billbooks):
     user = get_data('user', 409)
     relation = get_user_billbook_relation(user['_id'])
@@ -47,12 +45,27 @@ def pre_insert_billbooks(billbooks):
         elif billbook.get('default', False):
             billbooks[num]['default'] = False
 
-
 def post_insert_billbooks(billbooks):
     '''
     After insert billbooks, for each billbook:
         1. Set now user as owner
     '''
+    def _get_cats(billbook):
+        return [
+            {'icon': 'food', 'text': '餐饮', 'labels': [
+                '早餐', '中餐', '晚餐'], 'billbook': billbook},
+            {'icon': 'salary', 'text': '工资', 'labels': [], 'billbook': billbook},
+            {'icon': 'shopping', 'text': '购物', 'labels': [], 'billbook': billbook},
+            {'icon': 'bus', 'text': '交通', 'labels': [], 'billbook': billbook},
+            {'icon': 'sing', 'text': '娱乐', 'labels': [], 'billbook': billbook},
+            {'icon': 'coin', 'text': '消费', 'labels': [], 'billbook': billbook},
+            {'icon': 'loan', 'text': '信贷', 'labels': [], 'billbook': billbook},
+            {'icon': 'house-rent', 'text': '住房',
+                'labels': [], 'billbook': billbook},
+            {'icon': 'transfer', 'text': '转账', 'labels': [], 'billbook': billbook},
+            {'icon': 'travel', 'text': '旅行', 'labels': [], 'billbook': billbook}
+        ]
+
     user = get_data('user', 409)
     for billbook in billbooks:
         operator.post('billbook_user_relation', {
@@ -60,10 +73,9 @@ def post_insert_billbooks(billbooks):
             'billbook': billbook['_id'],
             'status': 0
         })
+        operator.post_many('bill_categorys', _get_cats(billbook['_id']))
 
 # R
-
-
 def pre_get_billbooks(req, lookup):
     '''
     Before get billbooks, check lookup to make sure
@@ -88,8 +100,6 @@ def pre_get_billbooks(req, lookup):
         # print(lookup)
 
 # U
-
-
 def pre_update_billbooks(updates, billbook):
     '''
     Before update bill book:
@@ -134,6 +144,7 @@ def post_delete_billbooks(billbook):
     for each in deleted:
         change_account_amount(each['_id'], -each['amount'])
 
-    operator.delete_many('billbook_user_relation', {
-                         'billbook': billbook['_id']})
-    operator.delete_many('bills', {'billbook': billbook['_id']})
+    lookup = {'billbook': billbook['_id']}
+    operator.delete_many('billbook_user_relation', lookup)
+    operator.delete_many('bills', lookup)
+    operator.delete_many('bill_categorys', lookup)

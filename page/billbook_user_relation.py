@@ -90,8 +90,6 @@ def check_billbook_lookup(billbook_lookup, user, relation=None):
     return billbook_lookup
 
 # C
-
-
 def pre_insert_relation(relations):
     '''
     Before insert relation:
@@ -110,8 +108,6 @@ def pre_insert_relation(relations):
             abort(409)
 
 # R
-
-
 def pre_get_relation(req, lookup):
     '''
     Before get relation:
