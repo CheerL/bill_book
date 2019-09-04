@@ -60,8 +60,9 @@ def pre_insert_bills(bills):
             'user': user['_id'],
             'billbook': bill['billbook']
         })
+        billbook = operator.get('billbooks', {'_id': bill['billbook']})
+
         if not relation:
-            billbook = operator.get('billbooks', {'_id': bill['billbook']})
             if billbook['status'] > 0:
                 abort(400)
         elif relation['status'] > 2:
