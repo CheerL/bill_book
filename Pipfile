@@ -9,12 +9,12 @@ pylint = "*"
 ipython = "*"
 
 [packages]
-eve = "*"
-pyjwt = "*"
-bcrypt = "*"
-gunicorn = "*"
-gevent = "*"
-flask-cors = "*"
+eve = "==0.9.2"
+pyjwt = "==1.7.1"
+bcrypt = "==3.1.7"
+gunicorn = "==19.9.0"
+gevent = "==1.4.0"
+flask-cors = "==3.0.8"
 
 [requires]
 python_version = "3.6"
