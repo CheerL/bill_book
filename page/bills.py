@@ -35,7 +35,6 @@ def _check_bill_cats(bill):
     billbook = bill.get('billbook')
     text = bill.get('cat_0')
     label = bill.get('cat_1', '')
-
     cat = operator.get('bill_categorys', {'billbook': billbook, 'text': text})
     if cat and label:
         if cat.get('labels', []):
@@ -45,9 +44,8 @@ def _check_bill_cats(bill):
             operator.patch('bill_categorys', {
                            '$set': {'labels': [label]}}, {'_id': cat['_id']})
 
+
 # C
-
-
 def pre_insert_bills(bills):
     '''
     Before insert bill:
@@ -71,8 +69,9 @@ def pre_insert_bills(bills):
 
         bills[num]['creater'] = user['_id']
         bills[num]['creater_name'] = user['nickname']
-        _check_bill_cats(bill)
 
+        if get_transfer_billbook(user['_id']) != billbook:
+            _check_bill_cats(bill)
 
 def post_insert_bills(bills):
     '''
@@ -81,6 +80,7 @@ def post_insert_bills(bills):
     '''
     for bill in bills:
         change_account_amount(bill['account'], bill['amount'])
+
 
 # R
 def pre_get_bills(req, lookup):
@@ -95,7 +95,6 @@ def pre_get_bills(req, lookup):
         else:
             lookup['billbook'] = {'$in': list(relation.keys())}
 
-
 def post_get_bills(res):
     user = get_data('user', 409)
     if user:
@@ -109,12 +108,10 @@ def post_get_bills(res):
                 res['billbook'] = 'transfer'
     return res
 
+
 # U
-
-
 def pre_update_bills(updates, bill):
     del_immutable_field(updates, ['creater', 'billbook'])
-
 
 def post_update_bills(updates, bill):
     ori_amount = bill['amount']
@@ -131,8 +128,7 @@ def post_update_bills(updates, bill):
 
     _check_bill_cats(bill)
 
+
 # D
-
-
 def post_delete_bills(bill):
     change_account_amount(bill['account'], -bill['amount'])
