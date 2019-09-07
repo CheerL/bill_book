@@ -14,7 +14,8 @@ class AccountAuth(BaseAuth):
         return True
 
 def change_account_amount(account, amount):
-    operator.patch('accounts', {'$inc': {'amount': amount}}, {'_id': account})
+    if account:
+        operator.patch('accounts', {'$inc': {'amount': amount}}, {'_id': account})
 
 # C
 def pre_insert_accounts(accounts):

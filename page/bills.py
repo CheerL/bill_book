@@ -30,6 +30,11 @@ class BillAuth(BaseAuth):
     def resource_auth(self, method):
         return True
 
+def get_normal_account(trans_account):
+    if trans_account and trans_account.startswith('transfer'):
+        return trans_account[8:]
+    return trans_account
+
 
 def _check_bill_cats(bill):
     billbook = bill.get('billbook')
@@ -60,9 +65,9 @@ def pre_insert_bills(bills):
             'user': user['_id'],
             'billbook': bill['billbook']
         })
-        billbook = operator.get('billbooks', {'_id': bill['billbook']})
 
         if not relation:
+            billbook = operator.get('billbooks', {'_id': bill['billbook']})
             if billbook['status'] > 0:
                 abort(400)
         elif relation['status'] > 2:
@@ -71,7 +76,7 @@ def pre_insert_bills(bills):
         bills[num]['creater'] = user['_id']
         bills[num]['creater_name'] = user['nickname']
 
-        if get_transfer_billbook(user['_id']) != billbook:
+        if get_transfer_billbook(user['_id']) != bill['billbook']:
             _check_bill_cats(bill)
 
 def post_insert_bills(bills):
@@ -79,8 +84,18 @@ def post_insert_bills(bills):
     After insert bill:
         1. Change the amont of the account of this bill
     '''
+    user = get_data('user', 409)
+    transfer = get_transfer_billbook(user['_id'])
+
     for bill in bills:
-        change_account_amount(bill['account'], bill['amount'])
+        amount = bill['amount']
+        change_account_amount(bill['account'], amount)
+        if transfer == bill['billbook']:
+            payer_id = bill.get('payer')
+            consumer_id = bill.get('consumer')
+            payer = operator.str2id(get_normal_account(payer_id)) if payer_id else None
+            consumer = operator.str2id(get_normal_account(consumer_id)) if consumer_id else None
+            change_account_amount(payer if bill['account'] != payer else consumer, -amount)
 
 
 # R
@@ -118,18 +133,40 @@ def post_update_bills(updates, bill):
     ori_amount = bill['amount']
     ori_account = bill['account']
     amount = updates.get('amount', ori_amount)
-    account = updates.get('account', None)
+    account = updates.get('account', ori_account)
     user = get_data('user', 409)
+    transfer_billbook = get_transfer_billbook(user['_id'])
 
-    if account:
-        change_account_amount(ori_account, -ori_amount)
-        change_account_amount(account, amount)
-    elif amount != ori_amount:
-        change_account_amount(ori_account, amount - ori_amount)
+    if bill['billbook'] != transfer_billbook:
+        if account != ori_account:
+            change_account_amount(ori_account, -ori_amount)
+            change_account_amount(account, amount)
+        elif amount != ori_amount:
+            change_account_amount(ori_account, amount - ori_amount)
+        _check_bill_cats(bill)
+    else:
+        ori_payer = bill['payer']
+        ori_consumer = bill['consumer']
+        payer_id = updates.get('payer', ori_payer)
+        consumer_id = updates.get('consumer', ori_consumer)
+        payer = operator.str2id(get_normal_account(payer_id)) if payer_id else None
+        consumer = operator.str2id(get_normal_account(consumer_id)) if consumer_id else None
 
-    _check_bill_cats(bill)
+        if amount != ori_amount:
+            change_account_amount(account, amount - ori_amount)
+            change_account_amount(payer if account != payer else consumer, ori_amount - amount)
 
 
 # D
 def post_delete_bills(bill):
-    change_account_amount(bill['account'], -bill['amount'])
+    user = get_data('user', 409)
+    transfer = get_transfer_billbook(user['_id'])
+    amount = bill['amount']
+
+    change_account_amount(bill['account'], -amount)
+    if transfer == bill['billbook'] and bill['payer'] and bill['consumer']:
+        payer_id = bill.get('payer')
+        consumer_id = bill.get('consumer')
+        payer = operator.str2id(get_normal_account(payer_id)) if payer_id else None
+        consumer = operator.str2id(get_normal_account(consumer_id)) if consumer_id else None
+        change_account_amount(payer if bill['account'] != payer else consumer, amount)
