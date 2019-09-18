@@ -10,13 +10,13 @@ def check_jwt(request):
     jwt = request.headers.get("Authorization")
     if not jwt:
         return False, (jsonify({
-            'message': 'No JWT'
+            'message': 'JWT不存在'
         }), 401)
 
     status, new, message, jwt, payload = jwt_run(jwt=jwt)
     if not status:
         return False, (jsonify({
-            'message': 'Invaild JWT, need to login'
+            'message': 'JWT无效, 请重新登录'
         }), 401)
 
     return True, (new, message, jwt, payload)
@@ -35,14 +35,14 @@ def register():
     user = operator.get('users', {'username': username})
     if user:
         return jsonify({
-            'message': 'User already exists'
+            'message': '用户已存在'
         }), 409
 
     # create user_info
     user_info = operator.post('user_infos', {'nickname': nickname})
     if not user_info:
         return jsonify({
-            'message': 'Failed to create user info'
+            'message': '用户信息创建失败'
         }), 407
 
     # create user with hashed password
@@ -55,7 +55,7 @@ def register():
     if not user:
         operator.delete('user_infos', {'_id': user_info['_id']})
         return jsonify({
-            'message': 'Failed to create user'
+            'message': '注册失败'
         }), 407
 
     # create default account
@@ -69,7 +69,7 @@ def register():
         operator.delete('user_infos', {'_id': user_info['_id']})
         operator.delete('users', {'_id': user['_id']})
         return jsonify({
-            'message': 'Failed to create account'
+            'message': '用户账户创建失败'
         }), 407
 
     # creater transfer billbook
@@ -85,7 +85,7 @@ def register():
     })
     # generate jwt
     return jsonify({
-        'message': 'Success to register'
+        'message': '注册成功'
     }), 200
 
 
@@ -102,7 +102,7 @@ def login_jwt():
     user_info = operator.get('user_infos', {'_id': user_id})
     if not user_info:
         return jsonify({
-            'message': 'Invaild JWT, need to login'
+            'message': 'JWT无效, 请重新登录'
         }), 401
 
     return jsonify({
@@ -126,20 +126,20 @@ def login():
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
-            'message': 'User does not exist'
+            'message': '用户不存在'
         }), 401
 
     # check password
     if not bcrypt_checker(password, user['password']):
         return jsonify({
-            'message': 'Password is wrong'
+            'message': '密码错误'
         }), 401
 
     # get user info
     user_info = operator.get('user_infos', {'_id': user['info']})
     if not user_info:
         return jsonify({
-            'message': 'Failed to get user information'
+            'message': '用户信息加载失败'
         }), 404
 
     # generate jwt
@@ -177,7 +177,7 @@ def remove():
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
-            'message': 'User does not exist'
+            'message': '用户不存在'
         }), 401
 
     # get user info
@@ -211,7 +211,7 @@ def remove():
     operator.delete('users', {'_id': user['_id']})
 
     return jsonify({
-        'message': 'Success to remove user'
+        'message': '删除用户成功'
     }), 200
 
 
@@ -226,7 +226,7 @@ def forget():
     user = operator.get('users', {'username': username})
     if not user:
         return jsonify({
-            'message': 'User does not exist'
+            'message': '用户不存在'
         }), 401
 
     # save new password
@@ -235,5 +235,5 @@ def forget():
                    '_id': user['_id']})
 
     return jsonify({
-        'message': 'Success to reset password'
+        'message': '修改密码成功'
     }), 200

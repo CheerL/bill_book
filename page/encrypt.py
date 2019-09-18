@@ -37,7 +37,7 @@ def jwt_run(payload=None, jwt=None, exp=JWT_EXP_LENGTH, secret=JWT_SECRET, algor
     if payload and jwt is None:
         status = True
         new = True
-        msg = 'Generate new JWT'
+        msg = '登录成功'
         jwt, payload = jwt_generator(payload, exp, secret, algorithm)
 
     elif payload is None and jwt:
@@ -50,17 +50,17 @@ def jwt_run(payload=None, jwt=None, exp=JWT_EXP_LENGTH, secret=JWT_SECRET, algor
 
             if exp_time >= now:
                 status = True
-                msg = 'OK'
+                msg = '登录成功'
             elif remember and gen_time + JWT_REMEMBER_LENGTH >= now:
                 status = True
                 new = True
-                msg = 'Refresh JWT'
+                msg = '登录成功'
                 jwt, payload = jwt_refresher(payload, exp, secret, algorithm)
             else:
-                msg = 'JWT overtime, need relogin'
+                msg = 'JWT过期, 请重新登录'
 
         except (InvalidSignatureError, DecodeError):
-            msg = 'Invalid JWT'
+            msg = 'JWT无效, 请重新登录'
 
     return status, new, msg, jwt, payload
 
