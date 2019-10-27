@@ -6,7 +6,7 @@ PORT = 5000
 
 OPTIMIZE_PAGINATION_FOR_SPEED = True
 # HATEOAS = False
-MONGO_URI = 'mongodb://mongo:27017/bill_book{}'.format('_dev' if os.environ.get('BILLBOOK_BACKEND_DEV', False) else '')
+MONGO_URI = 'mongodb://billbook_mongo:27017/bill_book{}'.format('_dev' if os.environ.get('BILLBOOK_BACKEND_DEV', False) else '')
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
 # PUBLIC_METHODS = []
