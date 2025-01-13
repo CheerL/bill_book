@@ -1,5 +1,5 @@
 from page import api
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from flask_cors import cross_origin
 from page.encrypt import jwt_run, bcrypt_generator, bcrypt_checker
 from page.billbook_user_relation import get_user_billbook_relation
@@ -84,9 +84,11 @@ def register():
         'status': 0
     })
     # generate jwt
-    return jsonify({
+    response = make_response(jsonify({
         'message': '注册成功'
-    }), 200
+    }))
+    response.headers.add('Set-Cookie','SameSite=None; Secure;')
+    return response, 200
 
 
 @api.route('/users/jwt', methods=['POST'])
@@ -105,14 +107,16 @@ def login_jwt():
             'message': 'JWT无效, 请重新登录'
         }), 401
 
-    return jsonify({
+    response = make_response(jsonify({
         'jwt': jwt if new else '',
         'message': message,
         'id': user_info['id'],
         'username': username,
         'nickname': user_info['nickname'],
         'avatar': user_info['avatar']
-    }), 200
+    }))
+    response.headers.add('Set-Cookie','SameSite=None; Secure;')
+    return response, 200
 
 
 @api.route('/users/login', methods=['POST'])
@@ -153,14 +157,16 @@ def login():
             'message': message
         }), 400
 
-    return jsonify({
+    response = make_response( jsonify({
         'jwt': jwt if new else '',
         'message': message,
         'id': user_info['id'],
         'username': username,
         'nickname': user_info['nickname'],
         'avatar': user_info['avatar']
-    }), 200
+    }))
+    response.headers.add('Set-Cookie','SameSite=None; Secure;')
+    return response, 200
 
 
 @api.route('/users/remove', methods=['POST'])
